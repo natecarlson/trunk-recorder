@@ -432,7 +432,7 @@ bool Call::add_signal_source(long src, const char *signaling_type, gr::blocks::S
   UnitTag *unit_tag = sys->find_unit_tag(src);
   std::string tag = (unit_tag == NULL || unit_tag->tag.empty() ? "" : unit_tag->tag);
 
-  Call_Source call_source = {src, time(NULL), position, signal == gr::blocks::SignalType::Emergency, system, tag};
+  Call_Source call_source = {src, time(NULL), position, signal == gr::blocks::SignalType::Emergency, system, tag, curr_freq};
 
   src_list.push_back(call_source);
 
@@ -579,6 +579,7 @@ boost::property_tree::ptree Call::get_stats() {
     source_node.put("signal_system", source_list[i].signal_system);
     source_node.put("emergency", source_list[i].emergency);
     source_node.put("tag", source_list[i].tag);
+    source_node.put("freq", source_list[i].freq);
     source_list_node.push_back(std::make_pair("", source_node));
   }
   call_node.add_child("sourceList", source_list_node);
