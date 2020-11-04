@@ -944,9 +944,9 @@ void handle_call(TrunkMessage message, System *sys) {
     }
     Call *call = new Call(message, sys, config);
     if (!message.source) {
-      BOOST_LOG_TRIVIAL(info) << "Source Zero - " << message.message_type << " freq: " << message.freq << "talkgroup:  " << message.talkgroup << " " << message.meta;
+      BOOST_LOG_TRIVIAL(info) << "Source Zero - " << message.message_type << " freq: " << FormatFreq(message.freq) << "talkgroup:  " << message.talkgroup << " " << message.meta;
     }
-    BOOST_LOG_TRIVIAL(info) << "Message Source " << message.source << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << "Call not found yet; starting call for freq: " << FormatFreq(message.freq) << " talkgroup: " << message.talkgroup << " source id " << message.source << std::endl;
     recording_started = start_recorder(call, message, sys);
     calls.push_back(call);
   }
