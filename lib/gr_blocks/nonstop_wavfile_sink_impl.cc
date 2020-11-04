@@ -108,19 +108,19 @@ bool nonstop_wavfile_sink_impl::open_internal(const char *filename) {
                    O_RDWR | O_CREAT | OUR_O_LARGEFILE | OUR_O_BINARY,
                    0664)) < 0) {
     perror(filename);
-    BOOST_LOG_TRIVIAL(error) << "wav error opening: " << filename << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\twav error opening: " << filename << std::endl;
     return false;
   }
 
   if (d_fp) { // if we've already got a new one open, close it
-    BOOST_LOG_TRIVIAL(trace) << "File pointer already open, closing " << d_fp << " more" << current_filename << " for " << filename << std::endl;
+    BOOST_LOG_TRIVIAL(trace) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tFile pointer already open, closing " << d_fp << " more" << current_filename << " for " << filename << std::endl;
 
     // fclose(d_fp);
     // d_fp = NULL;
   }
 
   if (strlen(filename) >= 255) {
-    BOOST_LOG_TRIVIAL(error) << "nonstop_wavfile_sink: Error! filename longer than 255";
+    BOOST_LOG_TRIVIAL(error) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tnonstop_wavfile_sink: Error! filename longer than 255";
   } else {
     strcpy(current_filename, filename);
   }
@@ -128,7 +128,7 @@ bool nonstop_wavfile_sink_impl::open_internal(const char *filename) {
   if ((d_fp = fdopen(fd, "rb+")) == NULL) {
     perror(filename);
     ::close(fd); // don't leak file descriptor if fdopen fails.
-    BOOST_LOG_TRIVIAL(error) << "wav open failed" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\twav open failed" << std::endl;
     return false;
   }
 
@@ -162,7 +162,7 @@ void nonstop_wavfile_sink_impl::close()
 {
     gr::thread::scoped_lock guard(d_mutex);
   if (!d_fp) {
-    BOOST_LOG_TRIVIAL(error) << "wav error closing file" << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\twav error closing file" << std::endl;
     return;
   }
 
@@ -198,10 +198,10 @@ bool nonstop_wavfile_sink_impl::stop()
 void nonstop_wavfile_sink_impl::log_p25_metadata(long unitId, const char* system_type, bool emergency)
 {
   if (d_current_call == NULL) {
-    BOOST_LOG_TRIVIAL(debug) << "Unable to log: " << system_type << " : " << unitId << ", no current call.";
+    BOOST_LOG_TRIVIAL(debug) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tUnable to log: " << system_type << " : " << unitId << ", no current call.";
   }
   else {
-    BOOST_LOG_TRIVIAL(debug) << "Logging " << system_type << " : " << unitId << " to current call.";
+    BOOST_LOG_TRIVIAL(debug) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tLogging " << system_type << " : " << unitId << " to current call.";
     d_current_call->add_signal_source(unitId, system_type, emergency ? SignalType::Emergency : SignalType::Normal);
   }
 }
@@ -213,7 +213,7 @@ int nonstop_wavfile_sink_impl::work(int noutput_items,  gr_vector_const_void_sta
   gr::thread::scoped_lock guard(d_mutex); // hold mutex for duration of this
 
   int nwritten = dowork(noutput_items, input_items, output_items);
-  BOOST_LOG_TRIVIAL(error) << "wav wrote: " << nwritten << " to: " << current_filename << " from source: " << curr_src_id  << std::endl;
+  BOOST_LOG_TRIVIAL(trace) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\twav wrote: " << nwritten << " to: " << current_filename << " from source: " << curr_src_id  << std::endl;
   d_stop_time = time(NULL);
 
   return nwritten;
@@ -260,7 +260,7 @@ int nonstop_wavfile_sink_impl::dowork(int noutput_items,  gr_vector_const_void_s
     }
     if (pmt::eq(that_key, tags[i].key)) {
       next_file = true;
-      BOOST_LOG_TRIVIAL(info) << " [" << i << "]-[  : Pos - " << d_sample_count << " offset: " << tags[i].offset - nitems_read(0) << " : "  << std::endl;
+      BOOST_LOG_TRIVIAL(trace) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\t[" << i << "]-[  : Pos - " << d_sample_count << " offset: " << tags[i].offset - nitems_read(0) << " : "  << std::endl;
         
     }
   }
@@ -273,20 +273,20 @@ if (next_file || (d_sample_count == 0)) {
         // create a new filename, based on the current time and source.
         d_current_call->create_filename();
         if (!open_internal(d_current_call->get_filename())) {
-            BOOST_LOG_TRIVIAL(error) << "can't open file";
+            BOOST_LOG_TRIVIAL(error) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tcan't open file: " << d_current_call->get_filename() << std::endl;
         }
       d_start_time = time(NULL);
 
       if (next_file) {
 
-          BOOST_LOG_TRIVIAL(info) << " Skipping to next file, Call Src:  "  << d_current_call->get_current_source() << std::endl;
+          BOOST_LOG_TRIVIAL(info)  << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tSkipping to next file, Call Src:  "  << d_current_call->get_current_source() << " New filename: " << d_current_call->get_filename() << std::endl;
       
       }
   }
 
   if (!d_fp) // drop output on the floor
   {
-    BOOST_LOG_TRIVIAL(error) << "Wav - Dropping items, no fp: " << noutput_items << " Filename: " << current_filename << " Current sample count: " << d_sample_count << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tWav - Dropping items, no fp: " << noutput_items << " Filename: " << current_filename << " Current sample count: " << d_sample_count << std::endl;
     return noutput_items;
   }
 
