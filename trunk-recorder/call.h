@@ -13,6 +13,7 @@ struct Call_Source {
   bool emergency;
   std::string signal_system;
   std::string tag;
+  double freq;
 };
 
 struct Call_Freq {
