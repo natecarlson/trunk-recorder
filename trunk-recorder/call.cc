@@ -12,6 +12,7 @@
 void Call::create_filename() {
   tm *ltm = localtime(&start_time);
   long current_source_id = get_current_source();
+  long current_time = get_current_source_time();
   std::stringstream path_stream;
 
   path_stream << this->config.capture_dir << "/" << sys->get_short_name() << "/" << 1900 + ltm->tm_year << "/" << 1 + ltm->tm_mon << "/" << ltm->tm_mday;
@@ -19,7 +20,7 @@ void Call::create_filename() {
   boost::filesystem::create_directories(path_stream.str());
 
   int nchars;
-  nchars = snprintf(filename, 255, "%s/%ld-%ld-%ld_%.0f.wav", path_stream.str().c_str(), talkgroup, start_time, current_source_id, curr_freq);
+  nchars = snprintf(filename, 255, "%s/%ld-%ld-%ld-%ld_%.0f.wav", path_stream.str().c_str(), talkgroup, start_time, current_time, current_source_id, curr_freq);
 
   if (nchars >= 255) {
     BOOST_LOG_TRIVIAL(error) << "Call: Path longer than 255 charecters";
@@ -30,7 +31,7 @@ void Call::create_filename() {
     BOOST_LOG_TRIVIAL(error) << "Call: Path longer than 255 charecters";
   }
 
-  nchars = snprintf(converted_filename, 255, "%s/%ld-%ld_%.0f.m4a", path_stream.str().c_str(), talkgroup, start_time, curr_freq);
+  nchars = snprintf(converted_filename, 255, "%s/%ld-%ld-%ld-%ld_%.0f.m4a", path_stream.str().c_str(), talkgroup, start_time, current_time, current_source_id, curr_freq);
   if (nchars >= 255) {
     BOOST_LOG_TRIVIAL(error) << "Call: Path longer than 255 charecters";
   }
@@ -403,6 +404,14 @@ long Call::get_current_source() {
     if (!src_list.empty()) {
     Call_Source last_source = src_list.back();
      return last_source.source;
+    }
+    return 0;
+}
+
+long Call::get_current_source_time() {
+    if (!src_list.empty()) {
+    Call_Source last_source = src_list.back();
+     return last_source.time;
     }
     return 0;
 }
