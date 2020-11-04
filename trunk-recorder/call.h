@@ -125,6 +125,7 @@ public:
   double get_final_length();
 
   long get_current_source(); 
+  long get_current_source_time(); 
   System *get_system();
 
 protected:
@@ -144,6 +145,7 @@ protected:
   int idle_count;
   time_t stop_time;
   time_t start_time;
+  time_t current_time;
   bool debug_recording;
   bool sigmf_recording;
   bool encrypted;
