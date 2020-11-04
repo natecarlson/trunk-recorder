@@ -886,7 +886,6 @@ void handle_call(TrunkMessage message, System *sys) {
 
     if ((call->get_talkgroup() == message.talkgroup) && (call->get_sys_num() == message.sys_num)) {
       call_found = true;
-
       // Check to make sure the Freq and TDMA info match up with what is being currenty recorded
       if ((call->get_freq() != message.freq) || (call->get_tdma_slot() != message.tdma_slot) || (call->get_phase2_tdma() != message.phase2_tdma)) {
         if (call->get_state() == recording) {
@@ -1435,7 +1434,7 @@ int main(int argc, char **argv) {
   if (config.log_file) {
     logging::add_file_log(
         keywords::file_name = "logs/%m-%d-%Y_%H%M_%2N.log",
-        keywords::format = "[%TimeStamp%]: %Message%",
+        keywords::format = "[%TimeStamp%]: (%Severity%) %Message%",
         keywords::rotation_size = 10 * 1024 * 1024,
         keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0),
         keywords::auto_flush = true);
