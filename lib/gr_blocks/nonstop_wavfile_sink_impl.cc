@@ -207,7 +207,7 @@ void nonstop_wavfile_sink_impl::log_p25_metadata(long unitId, const char *system
   if (d_current_call == NULL) {
     BOOST_LOG_TRIVIAL(debug) << "Unable to log: " << system_type << " : " << unitId << ", no current call.";
   } else {
-    BOOST_LOG_TRIVIAL(debug) << "Logging " << system_type << " : " << unitId << " to current call.";
+    BOOST_LOG_TRIVIAL(debug) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tLogging " << system_type << " : " << unitId << " to current call.";
     d_current_call->add_signal_source(unitId, system_type, emergency ? SignalType::Emergency : SignalType::Normal);
   }
 }
