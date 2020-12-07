@@ -157,7 +157,7 @@ void nonstop_wavfile_sink_impl::close() {
 
 
   if (!d_fp) {
-    BOOST_LOG_TRIVIAL(error) << "wav error closing file - this is probabl because no samples were received, so no file was opened." << std::endl;
+    BOOST_LOG_TRIVIAL(error) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\twav error closing file - this is probably because no samples were received (tuning error), so no file was opened." << std::endl;
     return;
   }
 
@@ -205,9 +205,9 @@ bool nonstop_wavfile_sink_impl::stop() {
 
 void nonstop_wavfile_sink_impl::log_p25_metadata(long unitId, const char *system_type, bool emergency) {
   if (d_current_call == NULL) {
-    BOOST_LOG_TRIVIAL(debug) << "Unable to log: " << system_type << " : " << unitId << ", no current call.";
+    BOOST_LOG_TRIVIAL(debug) << "Unable to log: " << system_type << " : " << unitId << ", no current call." << std::endl;
   } else {
-    BOOST_LOG_TRIVIAL(debug) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tLogging " << system_type << " : " << unitId << " to current call.";
+    BOOST_LOG_TRIVIAL(debug) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tLogging " << system_type << " : " << unitId << " to current call." << std::endl;
     d_current_call->add_signal_source(unitId, system_type, emergency ? SignalType::Emergency : SignalType::Normal);
   }
 }
