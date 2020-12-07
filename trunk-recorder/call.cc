@@ -204,7 +204,7 @@ void Call::end_transmissions() {
       std::stringstream shell_command;
 
       std::ofstream myfile(transmission_list[i].status_filename);
-      BOOST_LOG_TRIVIAL(info) << "Status file: " << transmission_list[i].status_filename;
+      //BOOST_LOG_TRIVIAL(info) << "Status file: " << transmission_list[i].status_filename;
       if (myfile.is_open()) {
         myfile << "{\n";
         myfile << "\"freq\": " << transmission_list[i].freq << ",\n";
@@ -225,17 +225,17 @@ void Call::end_transmissions() {
     
       if (sys->get_upload_script().length() != 0) {
         shell_command << "./" << sys->get_upload_script() << " " << transmission_list[i].filename << " &";
-        BOOST_LOG_TRIVIAL(info) << "Running transmission upload script: " << shell_command.str();
+        //BOOST_LOG_TRIVIAL(info) << "Running transmission upload script: " << shell_command.str();
         signal(SIGCHLD, SIG_IGN);
         //int rc = system(shell_command.str().c_str());
         system(shell_command.str().c_str());
       } else {
-        BOOST_LOG_TRIVIAL(info) << "No transmission upload script for : " << transmission_list[i].status_filename;
+        //BOOST_LOG_TRIVIAL(info) << "No transmission upload script for : " << transmission_list[i].status_filename;
       }
-    }
+    
     
 
-    //if ((transmission_list[i].start_time/8000) > sys->get_min_duration()) {
+    if ((transmission_list[i].start_time/8000) > sys->get_min_duration()) {
       if (this->config.upload_server != "" || this->config.bcfy_calls_server != "") {
         send_transmissions(this, sys, config);
       }
@@ -249,7 +249,7 @@ void Call::end_transmissions() {
           BOOST_LOG_TRIVIAL(error) << "Could not delete file " << status_filename;
         }
       }
-    /*} else {
+    } else {
       // Call too short, delete it (we are deleting it after since we can't easily prevent the file from saving)
      BOOST_LOG_TRIVIAL(info) << "[" << sys->get_short_name() << "]\tDeleting this call as it has a duration less than minimum duration of " << sys->get_min_duration() << "\tTG: " << this->get_talkgroup_display() << "\tFreq: " << FormatFreq(get_freq()) << "\tCall Duration: " << this->get_recorder()->get_current_length() << "s";
 
@@ -259,8 +259,8 @@ void Call::end_transmissions() {
       if (!sys->get_call_log() && remove(status_filename) != 0) {
         BOOST_LOG_TRIVIAL(error) << "Could not delete file " << status_filename;
       }
-    }*/
-
+    }
+    }
 
 }
 
@@ -290,10 +290,10 @@ this->get_recorder()->stop();
   this->set_state(inactive);
   
   if (transmission_list.size()>0) {
-    BOOST_LOG_TRIVIAL(info) << "Doing end_transmissions() " << transmission_list.size();
+    //BOOST_LOG_TRIVIAL(info) << "Doing end_transmissions() " << transmission_list.size();
     this->end_transmissions();
   } else {
-    BOOST_LOG_TRIVIAL(info) << "Doing end_conversation() " << transmission_list.size();
+    //BOOST_LOG_TRIVIAL(info) << "Doing end_conversation() " << transmission_list.size();
     this->end_conversation();
   }
   }
