@@ -356,7 +356,7 @@ if ( d_current_call && !d_current_call->get_conversation_mode() && d_termination
       curr_src_id = d_current_call->get_current_source();
       d_start_time = time(NULL);
 
-      BOOST_LOG_TRIVIAL(info) << " Source Termination - starting new file" <<  noutput_items << " Pos - " << d_sample_count << " Call Src:  " << d_current_call->get_current_source() << " Samples: " << d_sample_count << std::endl;
+      BOOST_LOG_TRIVIAL(debug) << "[" << d_current_call->get_short_name() << "]\tTG:" << d_current_call->get_talkgroup_display() << "\tFreq: " << FormatFreq(d_current_call->get_freq()) << "\tSource Termination - starting new file; output items: " << noutput_items << "Pos - " << d_sample_count << " Call Src: " << d_current_call->get_current_source() << "Samples: "<< d_sample_count << std::endl;
   
       d_termination_flag = false;
     } else {
